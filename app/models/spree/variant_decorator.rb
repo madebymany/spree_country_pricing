@@ -1,14 +1,13 @@
 Spree::Variant.class_eval do
 
-  def country_price(country_id)
+  def country_price(country_id, currency)
     Rails.cache.fetch(country_price_cache_key(country_id)) do
-      prices.find_by(country_id: country_id)
+      prices.where('country_id = ? OR currency = ?', country_id, currency).first
     end
   end
 
   def country_price_or_default(country_id, currency)
-    country_price(country_id) ||
-    prices.find_by(currency: currency) ||
+    country_price(country_id, currency) ||
     default_price
   end
 
